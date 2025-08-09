@@ -7388,7 +7388,11 @@ function BattlegroundTargets:GroupUnitIDUpdate()
 				rosterData = DATA.Roster[fName]
 				if not rosterData then
 					if CheckInteractDistance(unitID, 1) and CanInspect(unitID, false) then
-						NotifyInspect(unitID)
+						local specid = GetInspectSpecialization(unitID)
+						if specid and specid > 0 then
+							DATA.Roster[fName] = {}
+							DATA.Roster[fName].spec = specid
+						end
 					end
 				end
 			end
@@ -9100,36 +9104,6 @@ function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_rol
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 
-function BattlegroundTargets:InspectPlayer(unitGUID)
-	local unitID = nil
-
-
-	playerName, realmName = select(6, GetPlayerInfoByGUID(unitGUID))
-	if realmName ~= "" and string.find(playerName, "-") == -1 then
-		playerName = format("%s-%s", playerName, realmName)
-	end
-
-	rosterData = DATA.Roster[playerName]
-	if not rosterData then
-		for num = 1, GetNumGroupMembers() do
-			local checkID = "raid"..num
-			if UnitExists(checkID) then
-				local fName, _, _, _, _, class = GetRaidRosterInfo(num)
-				if fName and fName == playerName then
-					unitID = checkID
-					break
-				end
-			end
-		end
-		if unitID ~= nil then
-			local specid = GetInspectSpecialization(unitID)
-			if playerName and specid and specid > 0 then
-				DATA.Roster[playerName] = {}
-				DATA.Roster[playerName].spec = specid
-			end
-		end
-	end
-end
 
 -- ---------------------------------------------------------------------------------------------------------------------
 local function CombatLogPVPTrinketCheck(clEvent, spellId, sourceName) -- pvp_trinket_
@@ -9167,11 +9141,8 @@ local function CombatLogPVPTrinketCheck(clEvent, spellId, sourceName) -- pvp_tri
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 local function UpdateHealerRole(clEvent, sourseName, spellId)
-	rosterData = DATA.Roster[sourceName]
-	if not rosterData then
-		if (clEvent == "SPELL_CAST_SUCCESS" or clEvent == "SPELL_AURA_APPLIED") then
-			BattlegroundTargets:UpdateHealerRole(sourseName, spellId)
-		end
+	if (clEvent == "SPELL_CAST_SUCCESS" or clEvent == "SPELL_AURA_APPLIED") then
+		BattlegroundTargets:UpdateHealerRole(sourseName, spellId)
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
@@ -9830,9 +9801,6 @@ function BattlegroundTargets:EventRegister(showerror)
 	BattlegroundTargets:RegisterEvent("PLAYER_DEAD")
 	BattlegroundTargets:RegisterEvent("PLAYER_UNGHOST")
 	BattlegroundTargets:RegisterEvent("PLAYER_ALIVE")
-	BattlegroundTargets:RegisterEvent("INSPECT_READY")
---	BattlegroundTargets:RegisterEvent("NAME_PLATE_UNIT_ADDED")
---	BattlegroundTargets:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 end
 
 function BattlegroundTargets:EventUnregister()
@@ -9851,7 +9819,6 @@ function BattlegroundTargets:EventUnregister()
 	BattlegroundTargets:UnregisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
 	BattlegroundTargets:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	BattlegroundTargets:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	BattlegroundTargets:UnregisterEvent("INSPECT_READY")
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 
@@ -9995,11 +9962,6 @@ local function OnEvent(self, event, ...)
 			BattlegroundTargets_Options.FirstRun = true
 		end
 		BattlegroundTargets:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	elseif event == "INSPECT_READY" then
-		local arg1 = ...
-		if arg1 then
-			BattlegroundTargets:InspectPlayer(arg1)
-		end
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
