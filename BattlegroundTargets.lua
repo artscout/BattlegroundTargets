@@ -7235,8 +7235,6 @@ function BattlegroundTargets:IsBattleground()
 			end)
 
 		end
-		-- class_range_ END --
-		-- set global_OnUpdate END -----------------------------------
 	end
 
 	BattlegroundTargets:EventUnregister()
@@ -7247,13 +7245,6 @@ end
 -- ---------------------------------------------------------------------------------------------------------------------
 function BattlegroundTargets:IsNotBattleground()
 	if not inBattleground and not reCheckBG then return end
-
-	--for k, v in pairs(eventTest) do print("eventtest:", k, v) end -- TEST
-	--[[
-	for k, v in pairs(SPELL_Range) do
-		print("spellrange:", k, v, "#", SpellHasRange(k), "#", GetSpellInfo(k))
-	end
-	--]]
 
 	inBattleground = false
 
@@ -7310,13 +7301,6 @@ function BattlegroundTargets:IsNotBattleground()
 	end
 
 	if testData.specTest then
-		---debug( wait for next update
-		--for k, v in pairs(testData.specTest) do
-		--			for k2, v2 in pairs(v) do
-		--Print("ERROR#3 unknown spec:", v2.locale, v2.faction, v2.classToken, v2.talentSpec)
-		--end
-
-		--end
 		testData.specTest = nil
 	end
 
@@ -7416,13 +7400,6 @@ function BattlegroundTargets:GroupUnitIDUpdate()
 	else
 		BattlegroundTargets.GroupUpdateTimer = GetTime()
 	end
-
-	--[[
-	print("- BEGIN ---------------------------")
-	print("numMembers:", numMembers, "verified:", verified)
-	for k,v in pairs(DATA.Friend.Name2UnitID) do print(k,v) end
-	print("- END ---------------------------")
-	--]]
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 
