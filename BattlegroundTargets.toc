@@ -1,0 +1,14 @@
+## Interface: 50500
+## Title: BattlegroundTargets Mists of Pandaria
+## Notes: A Friend-Enemy-Unit-Frame for battlegrounds.
+## Notes-koKR: 전장용 적, 아군 유닛 프레임
+## Author: kunda, fix by Leming, fix by Artscout375
+## Version: 1.0.18
+## SavedVariables: BattlegroundTargets_Options
+## X-Curse-Project-ID: 982833
+
+Locale\Locale.xml
+Embeds.xml
+utf8.lua
+BattlegroundTargets_templates.lua
+BattlegroundTargets.lua
