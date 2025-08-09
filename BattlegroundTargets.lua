@@ -229,7 +229,7 @@ DATA.TargetECountNum = {}     -- key = unitName | value (number) = target count 
 DATA.PvPTrinketEndTime = {}   -- key = unitName | value (number) = endtime: when the trinket is ready for use again
 DATA.PvPTrinketId = {}        -- key = unitName | value (number) = spellId of trinket
 
-DATA.Healers = {}
+DATA.Roster = {}
 
 local pvptrinketIDs = {
 	[GetSpellInfo(5579)]	= 120,	-- Immune Root/Snare/Stun 		Warrior, Hunter, Shaman
@@ -498,7 +498,6 @@ for classID = 1, 12 do -- druid 11
 		classes[classTag].fixname = {}
 		classes[classTag].fix = false
 
-		--(Cataclysm classic has tabs from 0 to 2 for every class)
 		local numTabs = C_SpecializationInfo.GetNumSpecializationsForClassID(classID)
 
 		for i = 1, numTabs do
@@ -6827,6 +6826,13 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 			local specrole = 3
 			local specicon = nil
 			local class = "ZZZFAILURE"
+
+			local playerData = DATA.Roster[name]
+			if playerData and not talentSpec then
+				local _, specName = GetSpecializationInfoByID(playerData.spec)
+				talentSpec = specName
+			end
+
 			if classToken then
 				local token = classes[classToken] -- BGSPEC
 				if token then
@@ -6843,12 +6849,7 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 				end
 			end
 
---[[			for _, healerName in ipairs(DATA.Healers) do
-				if healerName == name then
-					specrole = 1
-				end
-			end
-]]
+
 			if not specicon then
 				if not testData.specTest then testData.specTest = {} end
 				if not testData.specTest[class] then testData.specTest[class] = {} end
@@ -6869,9 +6870,14 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 
 		elseif faction == playerFactionBG then
 
-			local specrole = 4
+			local specrole = 3
 			local specicon = nil
 			local class = "ZZZFAILURE"
+			local playerData = DATA.Roster[name]
+			if playerData and not talentSpec then
+				local _, specName = GetSpecializationInfoByID(playerData.spec)
+				talentSpec = specName
+			end
 			if classToken then
 				local token = classes[classToken] -- BGSPEC
 				if token then
@@ -7395,6 +7401,12 @@ function BattlegroundTargets:GroupUnitIDUpdate()
 				DATA.Friend.Name2UnitID[ fName ] = unitID
 				DATA.Friend.UnitID2Name[ unitID ] = fName
 				verified = verified + 1
+				rosterData = DATA.Roster[fName]
+				if not rosterData then
+					if CheckInteractDistance(unitID, 1) and CanInspect(unitID, false) then
+						NotifyInspect(unitID)
+					end
+				end
 			end
 		end
 	end
@@ -9026,64 +9038,121 @@ end
 
 -- ---------------------------------------------------------------------------------------------------------------------
 function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_role_detect
-
 	local isHealerCast = false
-
+	local specid
 	local Only_healer_spells = {
-	        [GetSpellInfo(47540)] = "PRIEST", -- Penance
-	        [GetSpellInfo(33206)] = "PRIEST", -- Pain Suppression
-	        [GetSpellInfo(81749)] = "PRIEST", -- Atonement
+		-- restore druid
+		[8936]   = {class = "DRUID", spec = 105}, -- Regrowth
+		[18562]  = {class = "DRUID", spec = 105}, -- SwiftMend
+		[33763]  = {class = "DRUID", spec = 105}, -- Lifebloom
+		[48438]  = {class = "DRUID", spec = 105}, -- Wild Growth
+		[50464]  = {class = "DRUID", spec = 105}, -- Nourish
+		[88423]  = {class = "DRUID", spec = 105}, -- Nature's Cure
+		[102342] = {class = "DRUID", spec = 105}, -- Ironbark
+		[145205] = {class = "DRUID", spec = 105}, -- Wild Mushroom
+		[145518] = {class = "DRUID", spec = 105}, -- Genesis
 
-	        [GetSpellInfo(34861)] = "PRIEST", -- Circle of Healing
-	        [GetSpellInfo(64843)] = "PRIEST", -- Divine Hymn
-	        [GetSpellInfo(47788)] = "PRIEST", -- Guardian Spirit
-	        [GetSpellInfo(77485)] = "PRIEST", -- Mastery: Echo of Light
-		[GetSpellInfo(724)]   = "PRIEST", -- Lightwell
-	        [GetSpellInfo(77489)] = "PRIEST", -- Echo of Light
+		-- mistweaver monk
+		[115070] = {class = "MONK", spec = 270},  -- Stance of the Wise Serpent
+		[115151] = {class = "MONK", spec = 270},  -- Renewing Mist
+		[115175] = {class = "MONK", spec = 270},  -- Soothing Mist
+		[115313] = {class = "MONK", spec = 270},  -- Summon Jade Serpent Statue
+		[116694] = {class = "MONK", spec = 270},  -- Surging Mist
+		[116849] = {class = "MONK", spec = 270},  -- Life Cocoon
+		[124041] = {class = "MONK", spec = 270},  -- Gift of the Serpent
+		[124682] = {class = "MONK", spec = 270},  -- Enveloping Mist
+		[126890] = {class = "MONK", spec = 270},  -- Eminence
 
-	        [GetSpellInfo(33763)]  = "DRUID", -- Lifebloom
-	        [GetSpellInfo(88423)]  = "DRUID", -- Nature's Cure
-	        [GetSpellInfo(8936)]   = "DRUID", -- Regrowth
-	        [GetSpellInfo(33891)]  = "DRUID", -- Incarnation: Tree of Life
-	        [GetSpellInfo(48438)]  = "DRUID", -- Wild Growth
-	        [GetSpellInfo(740)]    = "DRUID", -- Tranquility
-	        [GetSpellInfo(000774)] = "DRUID", -- Rejuvination
-		[GetSpellInfo(18562)]  = "DRUID", -- SwiftMend
+		-- discipline priest
+		[47540]  = {class = "PRIEST", spec = 256}, -- Penance
+		[33206]  = {class = "PRIEST", spec = 256}, -- Pain Suppression
+		[47536]  = {class = "PRIEST", spec = 256}, -- Rapture
+		[52798]  = {class = "PRIEST", spec = 256}, -- Borrowed Time
+		[62618]  = {class = "PRIEST", spec = 256}, -- Power Word: Barrier
+		[81700]  = {class = "PRIEST", spec = 256}, -- Archangel
+		[81749]  = {class = "PRIEST", spec = 256}, -- Atonement
+		[109964] = {class = "PRIEST", spec = 256}, -- Spirit Shell
 
-	        [GetSpellInfo(61295)] = "SHAMAN", -- Riptide
-	        [GetSpellInfo(77472)] = "SHAMAN", -- Healing Wave
-        	[GetSpellInfo(98008)] = "SHAMAN", -- Spirit link totem
-	        [GetSpellInfo(73920)] = "SHAMAN", -- Healing Rain
-                [GetSpellInfo(29206)] = "SHAMAN", -- Healing way
-                [GetSpellInfo(1064)]  = "SHAMAN", -- Chain Heal
-  
-        	[GetSpellInfo(20473)] = "PALADIN", -- Holy Shock
-	        [GetSpellInfo(53563)] = "PALADIN", -- Beacon of Light
-        	[GetSpellInfo(82326)] = "PALADIN", -- Holy Light
-	        [GetSpellInfo(85222)] = "PALADIN", -- Light of Dawn
-	    };
+		-- holy priest
+		[34861]  = {class = "PRIEST", spec = 257}, -- Circle of Healing
+		[63733]  = {class = "PRIEST", spec = 257}, -- Divine Hymn
+		[64843]  = {class = "PRIEST", spec = 257}, -- Serendipity
+		[47788]  = {class = "PRIEST", spec = 257}, -- Guardian Spirit
+		[77485]  = {class = "PRIEST", spec = 257}, -- Mastery: Echo of Light
+		[77489]  = {class = "PRIEST", spec = 257}, -- Echo of Light
+		[81206]  = {class = "PRIEST", spec = 257}, -- Chakra: Sanctuary
+		[81208]  = {class = "PRIEST", spec = 257}, -- Chakra: Serenity
+		[81209]  = {class = "PRIEST", spec = 257}, -- Chakra: Chastise
+		[88625]  = {class = "PRIEST", spec = 257}, -- Holy Word: Chastise
+		[88684]  = {class = "PRIEST", spec = 257}, -- Holy Word: Serenity
+		[88685]  = {class = "PRIEST", spec = 257}, -- Holy Word: Sanctuary
+		[126135] = {class = "PRIEST", spec = 257}, -- Lightwell
+
+		-- holy paladin
+		[635]    = {class = "PALADIN", spec = 65},  -- Holy Light
+		[2812]   = {class = "PALADIN", spec = 65},  -- Denounce
+		[20473]  = {class = "PALADIN", spec = 65},  -- Holy Shock
+		[53563]  = {class = "PALADIN", spec = 65},  -- Beacon of Light
+		[54428]  = {class = "PALADIN", spec = 65},  -- Divine Plea
+		[76669]  = {class = "PALADIN", spec = 65},  -- Mastery: Illuminated Healing
+		[85222]  = {class = "PALADIN", spec = 65},  -- Light of Dawn
+		[82326]  = {class = "PALADIN", spec = 65},  -- Divine Light
+		[82327]  = {class = "PALADIN", spec = 65},  -- Holy Radiance
+		[86669]  = {class = "PALADIN", spec = 65},  -- Guardian of Ancient Kings
+		[148039] = {class = "PALADIN", spec = 65},  -- Sacred Shield
+
+		-- restore shaman
+		[331]    = {class = "SHAMAN", spec = 264},  -- Healing Wave
+		[61295]  = {class = "SHAMAN", spec = 264},  -- Riptide
+		[77130]  = {class = "SHAMAN", spec = 264},  -- Purify Spirit
+		[77472]  = {class = "SHAMAN", spec = 264},  -- Greater Healing Wave
+	};
 
 	for healerSpellID, healerClass in pairs(Only_healer_spells) do
 		if spellId == healerSpellID then
 			isHealerCast = true
+			specid = healerClass.spec
 			break
 		end
 	end
 
-	if isHealerCast then
-		--print(format("Healer with name %s detected", sourceName))
-		local healerInList = false
-		for _,name in ipairs(DATA.Healers) do
-			if name == sourceName then
-				healerInList = true
-			end
-		end
-		if not healerInList then
-			tinsert(DATA.Healers, sourceName)
-		end
+	if isHealerCast and specid then
+		DATA.Roster[sourceName] = {}
+		DATA.Roster[sourceName].spec = specid
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
+
+function BattlegroundTargets:InspectPlayer(unitGUID)
+	local unitID = nil
+
+
+	playerName, realmName = select(6, GetPlayerInfoByGUID(unitGUID))
+	if realmName ~= "" and string.find(playerName, "-") == -1 then
+		playerName = format("%s-%s", playerName, realmName)
+	end
+
+	rosterData = DATA.Roster[playerName]
+	if not rosterData then
+		for num = 1, GetNumGroupMembers() do
+			local checkID = "raid"..num
+			if UnitExists(checkID) then
+				local fName, _, _, _, _, class = GetRaidRosterInfo(num)
+				if fName and fName == playerName then
+					unitID = checkID
+					break
+				end
+			end
+		end
+		if unitID ~= nil then
+			local specid = GetInspectSpecialization(unitID)
+			if playerName and specid and specid > 0 then
+				DATA.Roster[playerName] = {}
+				DATA.Roster[playerName].spec = specid
+			end
+		end
+	end
+end
 
 -- ---------------------------------------------------------------------------------------------------------------------
 local function CombatLogPVPTrinketCheck(clEvent, spellId, sourceName) -- pvp_trinket_
@@ -9121,8 +9190,11 @@ local function CombatLogPVPTrinketCheck(clEvent, spellId, sourceName) -- pvp_tri
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 local function UpdateHealerRole(clEvent, sourseName, spellId)
-	if (clEvent == "SPELL_CAST_SUCCESS" or clEvent == "SPELL_AURA_APPLIED") then
-		BattlegroundTargets:UpdateHealerRole(sourseName, spellId)
+	rosterData = DATA.Roster[sourceName]
+	if not rosterData then
+		if (clEvent == "SPELL_CAST_SUCCESS" or clEvent == "SPELL_AURA_APPLIED") then
+			BattlegroundTargets:UpdateHealerRole(sourseName, spellId)
+		end
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
@@ -9781,6 +9853,9 @@ function BattlegroundTargets:EventRegister(showerror)
 	BattlegroundTargets:RegisterEvent("PLAYER_DEAD")
 	BattlegroundTargets:RegisterEvent("PLAYER_UNGHOST")
 	BattlegroundTargets:RegisterEvent("PLAYER_ALIVE")
+	BattlegroundTargets:RegisterEvent("INSPECT_READY")
+--	BattlegroundTargets:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+--	BattlegroundTargets:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 end
 
 function BattlegroundTargets:EventUnregister()
@@ -9799,6 +9874,7 @@ function BattlegroundTargets:EventUnregister()
 	BattlegroundTargets:UnregisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
 	BattlegroundTargets:UnregisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	BattlegroundTargets:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	BattlegroundTargets:UnregisterEvent("INSPECT_READY")
 end
 -- ---------------------------------------------------------------------------------------------------------------------
 
@@ -9853,10 +9929,11 @@ local function OnEvent(self, event, ...)
 		end
 
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local _, clEvent, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _, _, spellId = CombatLogGetCurrentEventInfo() -- TODO Combat log
+		local _, clEvent, _, _, sourceName, sourceFlags, _, _, destName, destFlags = CombatLogGetCurrentEventInfo() -- TODO Combat log
+		local spellId, _, _, amount, _, _, _, _, _, critical = select(12, CombatLogGetCurrentEventInfo())
 		if not sourceFlags or band(sourceFlags, 0x00000400) == 0 then return end
 		CombatLogPVPTrinketCheck(clEvent, spellId, sourceName)
-		--UpdateHealerRole(clEvent, sourceName, spellId)
+		UpdateHealerRole(clEvent, sourceName, spellId)
 		if not destFlags or band(destFlags, 0x00000400) == 0 then return end
 		if sourceName == destName then return end
 		---[[ TEST
@@ -9887,7 +9964,6 @@ local function OnEvent(self, event, ...)
 		BattlegroundTargets:GroupRosterUpdate()
 	elseif event == "PARTY_LEADER_CHANGED" then
 		BattlegroundTargets:FriendLeaderUpdate()
-
 	elseif event == "CHAT_MSG_BG_SYSTEM_HORDE" then
 		local arg1 = ...
 		BattlegroundTargets:CarrierCheck(arg1, 0)
@@ -9942,6 +10018,11 @@ local function OnEvent(self, event, ...)
 			BattlegroundTargets_Options.FirstRun = true
 		end
 		BattlegroundTargets:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	elseif event == "INSPECT_READY" then
+		local arg1 = ...
+		if arg1 then
+			BattlegroundTargets:InspectPlayer(arg1)
+		end
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
