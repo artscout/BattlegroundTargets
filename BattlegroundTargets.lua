@@ -608,15 +608,15 @@ end
 
 local class_IntegerSort = { -- .cid .blizz .eng .loc
 	{cid = "DEATHKNIGHT", blizz = class_BlizzSort.DEATHKNIGHT or  2, eng = "Death Knight", loc = class_LocaSort.DEATHKNIGHT or "Death Knight"}, -- 1
-	{cid = "DRUID",       blizz = class_BlizzSort.DRUID       or 6, eng = "Druid",        loc = class_LocaSort.DRUID       or "Druid"},        -- 2
-	{cid = "HUNTER",      blizz = class_BlizzSort.HUNTER      or 3, eng = "Hunter",       loc = class_LocaSort.HUNTER      or "Hunter"},       -- 3
+	{cid = "DRUID",       blizz = class_BlizzSort.DRUID       or  6, eng = "Druid",        loc = class_LocaSort.DRUID       or "Druid"},        -- 2
+	{cid = "HUNTER",      blizz = class_BlizzSort.HUNTER      or  3, eng = "Hunter",       loc = class_LocaSort.HUNTER      or "Hunter"},       -- 3
 	{cid = "MAGE",        blizz = class_BlizzSort.MAGE        or  8, eng = "Mage",         loc = class_LocaSort.MAGE        or "Mage"},         -- 4
-	--{cid = "MONK",        blizz = class_BlizzSort.MONK        or  4, eng = "Monk",         loc = class_LocaSort.MONK        or "Monk"},         -- 5
+	{cid = "MONK",        blizz = class_BlizzSort.MONK        or  4, eng = "Monk",         loc = class_LocaSort.MONK        or "Monk"},         -- 5
 	{cid = "PALADIN",     blizz = class_BlizzSort.PALADIN     or  2, eng = "Paladin",      loc = class_LocaSort.PALADIN     or "Paladin"},      -- 6
 	{cid = "PRIEST",      blizz = class_BlizzSort.PRIEST      or  5, eng = "Priest",       loc = class_LocaSort.PRIEST      or "Priest"},       -- 7
 	{cid = "ROGUE",       blizz = class_BlizzSort.ROGUE       or  4, eng = "Rogue",        loc = class_LocaSort.ROGUE       or "Rogue"},        -- 8
 	{cid = "SHAMAN",      blizz = class_BlizzSort.SHAMAN      or  7, eng = "Shaman",       loc = class_LocaSort.SHAMAN      or "Shaman"},       -- 9
-	{cid = "WARLOCK",     blizz = class_BlizzSort.WARLOCK     or 9, eng = "Warlock",      loc = class_LocaSort.WARLOCK     or "Warlock"},      -- 10
+	{cid = "WARLOCK",     blizz = class_BlizzSort.WARLOCK     or  9, eng = "Warlock",      loc = class_LocaSort.WARLOCK     or "Warlock"},      -- 10
 	{cid = "WARRIOR",     blizz = class_BlizzSort.WARRIOR     or  1, eng = "Warrior",      loc = class_LocaSort.WARRIOR     or "Warrior"},      -- 11
 	--{cid = "DEMONHUNTER", blizz = class_BlizzSort.DEMONHUNTER or 12, eng = "Demon Hunter", loc = class_LocaSort.DEMONHUNTER or "Demon Hunter"}, -- 12
 }
@@ -627,7 +627,7 @@ local ranges = {
 		DRUID       = {id =  50769, lvl =  14}, -- Revive	           (  0 - 40yd/m) - Lvl  4
 		HUNTER      = {id =    136, lvl = 111}, --none Misdirection    (  0 -100yd/m) - Lvl 42 HUN42 -- no_def_range
 		MAGE        = {id =    130, lvl =  32}, -- Slow Fall	       (  0 - 40yd/m) - Lvl 29 MAG32
-		--MONK        = {id = 115178, lvl =  14}, -- Resuscitate         (  0 - 40yd/m) - Lvl 18 MON18
+		MONK        = {id = 115178, lvl =  14}, -- Resuscitate         (  0 - 40yd/m) - Lvl 18 MON18
 		PALADIN     = {id =    633, lvl =  22}, -- LoH			       (  0 - 40yd/m) - Lvl  9
 		PRIEST      = {id =   2006, lvl =  14}, -- Resurection         (  0 - 40yd/m) - Lvl  7
 		ROGUE       = {id =  57934, lvl =  64}, -- Tricks of the Trade (  0 -100yd/m) - Lvl 78 ROG78 -- no_def_range
@@ -641,7 +641,7 @@ local ranges = {
 		DRUID       = {id =    339, lvl =  22}, -- Entangling Roots              (  0 - 40yd/m) - Lvl  1
 		HUNTER      = {id =     75, lvl =   1}, -- Auto Shot           (  0 - 40yd/m) - Lvl  1
 		MAGE        = {id =   2139, lvl =  34}, -- Counterspell        (  0 - 40yd/m) - Lvl  1
-		--MONK        = {id = 117952, lvl =  36}, -- Crackling Jade L    (  0 - 40yd/m) - Lvl 14 MON14
+		MONK        = {id = 117952, lvl =  36}, -- Crackling Jade L    (  0 - 40yd/m) - Lvl 14 MON14
 		PALADIN     = {id =  20271, lvl =   3}, -- Judgment            (  0 - 30yd/m) - Lvl  3
 		PRIEST      = {id =    585, lvl =   1}, -- smite               (  0 - 40yd/m) - Lvl  4
 		ROGUE       = {id =   6770, lvl =  12}, -- Sap                 (  0 - 10yd/m) - Lvl 12 ROG12
@@ -6851,6 +6851,7 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 
 
 			if not specicon then
+				specicon = 132269
 				if not testData.specTest then testData.specTest = {} end
 				if not testData.specTest[class] then testData.specTest[class] = {} end
 				if not talentSpec then talentSpec = "talentSpec_is_unknown!" end
@@ -6897,6 +6898,7 @@ function BattlegroundTargets:BattlefieldScoreUpdate()
 
 
 			if not specicon then
+				specicon = 132269
 				if not testData.specTest then testData.specTest = {} end
 				if not testData.specTest[class] then testData.specTest[class] = {} end
 				if not talentSpec then talentSpec = "talentSpec_is_unknown" end
@@ -9018,10 +9020,56 @@ end
 -- ---------------------------------------------------------------------------------------------------------------------
 
 -- ---------------------------------------------------------------------------------------------------------------------
-function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_role_detect
-	local isHealerCast = false
+function BattlegroundTargets:UpdatePlayerRole(sourceName, spellId) -- spec detection by spells cast
+	local isCastDetected = false
 	local specid
-	local Only_healer_spells = {
+	local detect_spec_by_spells = {
+		-- blood dk
+		[48982]  = {class = "DEATHKNIGHT", spec = 250},
+		[49028]  = {class = "DEATHKNIGHT", spec = 250},
+		[55050]  = {class = "DEATHKNIGHT", spec = 250},
+		[55233]  = {class = "DEATHKNIGHT", spec = 250},
+		[56222]  = {class = "DEATHKNIGHT", spec = 250},
+		[56815]  = {class = "DEATHKNIGHT", spec = 250},
+		[77513]  = {class = "DEATHKNIGHT", spec = 250},
+		[114866] = {class = "DEATHKNIGHT", spec = 250},
+
+		-- frost dk
+		[49020]  = {class = "DEATHKNIGHT", spec = 251},
+		[49143]  = {class = "DEATHKNIGHT", spec = 251},
+		[49184]  = {class = "DEATHKNIGHT", spec = 251},
+		[51271]  = {class = "DEATHKNIGHT", spec = 251},
+		[130735] = {class = "DEATHKNIGHT", spec = 251},
+
+		--unholy dk
+		[49206]  = {class = "DEATHKNIGHT", spec = 252},
+		[55090]  = {class = "DEATHKNIGHT", spec = 252},
+		[63560]  = {class = "DEATHKNIGHT", spec = 252},
+		[85948]  = {class = "DEATHKNIGHT", spec = 252},
+		[130736] = {class = "DEATHKNIGHT", spec = 252},
+
+		--balance druid
+		[2912]   = {class = "DRUID", spec = 102},
+		[24858]  = {class = "DRUID", spec = 102},
+		[48505]  = {class = "DRUID", spec = 102},
+		[78647]  = {class = "DRUID", spec = 102},
+		[78675]  = {class = "DRUID", spec = 102},
+		[88747]  = {class = "DRUID", spec = 102},
+		[88751]  = {class = "DRUID", spec = 102},
+		[93402]  = {class = "DRUID", spec = 102},
+		[112071] = {class = "DRUID", spec = 102},
+		[127663] = {class = "DRUID", spec = 102},
+
+		-- feral druid
+		[5217]   = {class = "DRUID", spec = 103},
+		[5221]   = {class = "DRUID", spec = 103},
+		[52610]  = {class = "DRUID", spec = 103},
+
+		-- tank druid
+		[5229]   = {class = "DRUID", spec = 104},
+		[62606]  = {class = "DRUID", spec = 104},
+		[102795] = {class = "DRUID", spec = 104},
+
 		-- restore druid
 		[8936]   = {class = "DRUID", spec = 105}, -- Regrowth
 		[18562]  = {class = "DRUID", spec = 105}, -- SwiftMend
@@ -9033,6 +9081,68 @@ function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_rol
 		[145205] = {class = "DRUID", spec = 105}, -- Wild Mushroom
 		[145518] = {class = "DRUID", spec = 105}, -- Genesis
 
+		--bm hunt
+		[19574]  = {class = "HUNTER", spec = 253},
+		[34026]  = {class = "HUNTER", spec = 253},
+		[82692]  = {class = "HUNTER", spec = 253},
+
+		--mm hunt
+		[19434]   = {class = "HUNTER", spec = 254},
+		[34490]   = {class = "HUNTER", spec = 254},
+		[53209]   = {class = "HUNTER", spec = 254},
+
+		--surv hunt
+		[3674]    = {class = "HUNTER", spec = 255},
+		[53301]   = {class = "HUNTER", spec = 255},
+
+		--arcane mage
+		[5143]    = {class = "MAGE", spec = 62},
+		[12042]   = {class = "MAGE", spec = 62},
+		[30451]   = {class = "MAGE", spec = 62},
+		[31589]   = {class = "MAGE", spec = 62},
+		[44425]   = {class = "MAGE", spec = 62},
+
+		--fire mage
+		[133]     = {class = "MAGE", spec = 63},
+		[2948]    = {class = "MAGE", spec = 63},
+		[11129]   = {class = "MAGE", spec = 63},
+		[31661]   = {class = "MAGE", spec = 63},
+		[108853]  = {class = "MAGE", spec = 63},
+		[132209]  = {class = "MAGE", spec = 63},
+
+		--frost mage
+		[116]     = {class = "MAGE", spec = 64},
+		[12472]   = {class = "MAGE", spec = 64},
+		[31687]   = {class = "MAGE", spec = 64},
+		[44549]   = {class = "MAGE", spec = 64},
+		[76613]   = {class = "MAGE", spec = 64},
+		[84714]   = {class = "MAGE", spec = 64},
+		[112965]  = {class = "MAGE", spec = 64},
+
+		-- brewmaster monk
+		[115069] = {class = "MONK", spec = 268},
+		[115180] = {class = "MONK", spec = 268},
+		[115181] = {class = "MONK", spec = 268},
+		[115213] = {class = "MONK", spec = 268},
+		[115295] = {class = "MONK", spec = 268},
+		[115308] = {class = "MONK", spec = 268},
+		[115315] = {class = "MONK", spec = 268},
+		[119582] = {class = "MONK", spec = 268},
+		[121253] = {class = "MONK", spec = 268},
+		[122057] = {class = "MONK", spec = 268},
+		[124502] = {class = "MONK", spec = 268},
+
+		--winddancer monk
+		[101545] = {class = "MONK", spec = 269},
+		[107428] = {class = "MONK", spec = 269},
+		[113656] = {class = "MONK", spec = 269},
+		[115073] = {class = "MONK", spec = 269},
+		[115288] = {class = "MONK", spec = 269},
+		[116740] = {class = "MONK", spec = 269},
+		[116781] = {class = "MONK", spec = 269},
+		[122470] = {class = "MONK", spec = 269},
+		[137639] = {class = "MONK", spec = 269},
+
 		-- mistweaver monk
 		[115070] = {class = "MONK", spec = 270},  -- Stance of the Wise Serpent
 		[115151] = {class = "MONK", spec = 270},  -- Renewing Mist
@@ -9043,6 +9153,37 @@ function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_rol
 		[124041] = {class = "MONK", spec = 270},  -- Gift of the Serpent
 		[124682] = {class = "MONK", spec = 270},  -- Enveloping Mist
 		[126890] = {class = "MONK", spec = 270},  -- Eminence
+
+
+		-- holy paladin
+		[635]    = {class = "PALADIN", spec = 65},  -- Holy Light
+		[2812]   = {class = "PALADIN", spec = 65},  -- Denounce
+		[20473]  = {class = "PALADIN", spec = 65},  -- Holy Shock
+		[53563]  = {class = "PALADIN", spec = 65},  -- Beacon of Light
+		[54428]  = {class = "PALADIN", spec = 65},  -- Divine Plea
+		[76669]  = {class = "PALADIN", spec = 65},  -- Mastery: Illuminated Healing
+		[85222]  = {class = "PALADIN", spec = 65},  -- Light of Dawn
+		[82326]  = {class = "PALADIN", spec = 65},  -- Divine Light
+		[82327]  = {class = "PALADIN", spec = 65},  -- Holy Radiance
+		[86669]  = {class = "PALADIN", spec = 65},  -- Guardian of Ancient Kings
+		[148039] = {class = "PALADIN", spec = 65},  -- Sacred Shield
+
+		-- protection paladin
+		[119072] = {class = "PALADIN", spec = 66},
+		[86659]  = {class = "PALADIN", spec = 66},
+		[26573]  = {class = "PALADIN", spec = 66},
+		[31850]  = {class = "PALADIN", spec = 66},
+		[31935]  = {class = "PALADIN", spec = 66},
+		[53600]  = {class = "PALADIN", spec = 66},
+
+		-- retribution paladin
+		[879]    = {class = "PALADIN", spec = 70},
+		[20164]  = {class = "PALADIN", spec = 70},
+		[53385]  = {class = "PALADIN", spec = 70},
+		[84963]  = {class = "PALADIN", spec = 70},
+		[85256]  = {class = "PALADIN", spec = 70},
+		[86698]  = {class = "PALADIN", spec = 70},
+		[121783] = {class = "PALADIN", spec = 70},
 
 		-- discipline priest
 		[47540]  = {class = "PRIEST", spec = 256}, -- Penance
@@ -9069,35 +9210,114 @@ function BattlegroundTargets:UpdateHealerRole(sourceName, spellId) -- healer_rol
 		[88685]  = {class = "PRIEST", spec = 257}, -- Holy Word: Sanctuary
 		[126135] = {class = "PRIEST", spec = 257}, -- Lightwell
 
-		-- holy paladin
-		[635]    = {class = "PALADIN", spec = 65},  -- Holy Light
-		[2812]   = {class = "PALADIN", spec = 65},  -- Denounce
-		[20473]  = {class = "PALADIN", spec = 65},  -- Holy Shock
-		[53563]  = {class = "PALADIN", spec = 65},  -- Beacon of Light
-		[54428]  = {class = "PALADIN", spec = 65},  -- Divine Plea
-		[76669]  = {class = "PALADIN", spec = 65},  -- Mastery: Illuminated Healing
-		[85222]  = {class = "PALADIN", spec = 65},  -- Light of Dawn
-		[82326]  = {class = "PALADIN", spec = 65},  -- Divine Light
-		[82327]  = {class = "PALADIN", spec = 65},  -- Holy Radiance
-		[86669]  = {class = "PALADIN", spec = 65},  -- Guardian of Ancient Kings
-		[148039] = {class = "PALADIN", spec = 65},  -- Sacred Shield
+		-- shadow priest
+		[2944]   = {class = "PRIEST", spec = 258},
+		[8092]   = {class = "PRIEST", spec = 258},
+		[15286]  = {class = "PRIEST", spec = 258},
+		[15407]  = {class = "PRIEST", spec = 258},
+		[15473]  = {class = "PRIEST", spec = 258},
+		[15487]  = {class = "PRIEST", spec = 258},
+		[34914]  = {class = "PRIEST", spec = 258},
+		[47585]  = {class = "PRIEST", spec = 258},
+		[64044]  = {class = "PRIEST", spec = 258},
+		[73510]  = {class = "PRIEST", spec = 258},
+		[142723] = {class = "PRIEST", spec = 258},
+
+		-- assassination rogue
+		[1329]   = {class = "ROGUE", spec = 259},
+		[32645]  = {class = "ROGUE", spec = 259},
+		[79140]  = {class = "ROGUE", spec = 259},
+		[111240] = {class = "ROGUE", spec = 259},
+
+		-- combat rogue
+		[13750]  = {class = "ROGUE", spec = 260},
+		[13877]  = {class = "ROGUE", spec = 260},
+		[51690]  = {class = "ROGUE", spec = 260},
+		[84617]  = {class = "ROGUE", spec = 260},
+
+		-- subtlety rogue
+		[53]     = {class = "ROGUE", spec = 261},
+		[14183]  = {class = "ROGUE", spec = 261},
+		[16511]  = {class = "ROGUE", spec = 261},
+		[51713]  = {class = "ROGUE", spec = 261},
+
+		-- elemental shaman
+		[51490]  = {class = "SHAMAN", spec = 262},
+		[61882]  = {class = "SHAMAN", spec = 262},
+
+		-- enhancement shaman
+		[1335]   = {class = "SHAMAN", spec = 263},
+		[17364]  = {class = "SHAMAN", spec = 263},
+		[51533]  = {class = "SHAMAN", spec = 263},
+		[58875]  = {class = "SHAMAN", spec = 263},
+		[60103]  = {class = "SHAMAN", spec = 263},
 
 		-- restore shaman
 		[331]    = {class = "SHAMAN", spec = 264},  -- Healing Wave
 		[61295]  = {class = "SHAMAN", spec = 264},  -- Riptide
 		[77130]  = {class = "SHAMAN", spec = 264},  -- Purify Spirit
 		[77472]  = {class = "SHAMAN", spec = 264},  -- Greater Healing Wave
+
+		-- affliction warlock
+		[1120]   = {class = "WARLOCK", spec = 265},
+		[27243]  = {class = "WARLOCK", spec = 265},
+		[30108]  = {class = "WARLOCK", spec = 265},
+		[48181]  = {class = "WARLOCK", spec = 265},
+		[74434]  = {class = "WARLOCK", spec = 265},
+		[86121]  = {class = "WARLOCK", spec = 265},
+		[103103] = {class = "WARLOCK", spec = 265},
+		[113860] = {class = "WARLOCK", spec = 265},
+
+		-- demonology warlock
+		[1949]   = {class = "WARLOCK", spec = 266},
+		[6353]   = {class = "WARLOCK", spec = 266},
+		[103958] = {class = "WARLOCK", spec = 266},
+		[105174] = {class = "WARLOCK", spec = 266},
+		[109151] = {class = "WARLOCK", spec = 266},
+
+		-- destruction warlock
+		[348]    = {class = "WARLOCK", spec = 267},
+		[17877]  = {class = "WARLOCK", spec = 267},
+		[17962]  = {class = "WARLOCK", spec = 267},
+		[29722]  = {class = "WARLOCK", spec = 267},
+		[80240]  = {class = "WARLOCK", spec = 267},
+		[108683] = {class = "WARLOCK", spec = 267},
+		[113858] = {class = "WARLOCK", spec = 267},
+		[114635] = {class = "WARLOCK", spec = 267},
+		[116858] = {class = "WARLOCK", spec = 267},
+		[120451] = {class = "WARLOCK", spec = 267},
+		[131973] = {class = "WARLOCK", spec = 267},
+
+		-- arms warrior
+		[1464]   = {class = "WARRIOR", spec = 71},
+		[7384]   = {class = "WARRIOR", spec = 71},
+		[12294]  = {class = "WARRIOR", spec = 71},
+		[12328]  = {class = "WARRIOR", spec = 71},
+
+		-- fury warrior
+		[23881]  = {class = "WARRIOR", spec = 72},
+		[85288]  = {class = "WARRIOR", spec = 72},
+		[100130] = {class = "WARRIOR", spec = 72},
+
+		-- prot warrior
+		[1670]   = {class = "WARRIOR", spec = 73},
+		[2565]   = {class = "WARRIOR", spec = 73},
+		[6572]   = {class = "WARRIOR", spec = 73},
+		[12975]  = {class = "WARRIOR", spec = 73},
+		[20243]  = {class = "WARRIOR", spec = 73},
+		[23922]  = {class = "WARRIOR", spec = 73},
+		[112048] = {class = "WARRIOR", spec = 73},
 	};
 
-	for healerSpellID, healerClass in pairs(Only_healer_spells) do
-		if spellId == healerSpellID then
-			isHealerCast = true
-			specid = healerClass.spec
+	for detectSpellID, playerClass in pairs(detect_spec_by_spells) do
+		if spellId == detectSpellID then
+			isCastDetected = true
+			specid = playerClass.spec
 			break
 		end
 	end
 
-	if isHealerCast and specid then
+	if isCastDetected and specid then
 		DATA.Roster[sourceName] = {}
 		DATA.Roster[sourceName].spec = specid
 	end
@@ -9140,9 +9360,9 @@ local function CombatLogPVPTrinketCheck(clEvent, spellId, sourceName) -- pvp_tri
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
-local function UpdateHealerRole(clEvent, sourseName, spellId)
+local function UpdatePlayerRole(clEvent, sourseName, spellId)
 	if (clEvent == "SPELL_CAST_SUCCESS" or clEvent == "SPELL_AURA_APPLIED") then
-		BattlegroundTargets:UpdateHealerRole(sourseName, spellId)
+		BattlegroundTargets:UpdatePlayerRole(sourseName, spellId)
 	end
 end
 -- ---------------------------------------------------------------------------------------------------------------------
@@ -9877,7 +10097,7 @@ local function OnEvent(self, event, ...)
 		local spellId, _, _, amount, _, _, _, _, _, critical = select(12, CombatLogGetCurrentEventInfo())
 		if not sourceFlags or band(sourceFlags, 0x00000400) == 0 then return end
 		CombatLogPVPTrinketCheck(clEvent, spellId, sourceName)
-		UpdateHealerRole(clEvent, sourceName, spellId)
+		UpdatePlayerRole(clEvent, sourceName, spellId)
 		if not destFlags or band(destFlags, 0x00000400) == 0 then return end
 		if sourceName == destName then return end
 		---[[ TEST
