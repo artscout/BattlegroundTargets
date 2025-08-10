@@ -232,12 +232,12 @@ DATA.PvPTrinketId = {}        -- key = unitName | value (number) = spellId of tr
 DATA.Roster = {}
 
 local pvptrinketIDs = {
-	[GetSpellInfo(5579)]	= 120,	-- Immune Root/Snare/Stun 		Warrior, Hunter, Shaman
-	[GetSpellInfo(7744)]    = 120,
-	[GetSpellInfo(23274)]	= 120, 	-- Immune Fear/Polymorph/Snare	Mage
-	[GetSpellInfo(23276)]	= 120,	-- Immune Fear/Polymorph/Stun	Paladin, Priest
-	[GetSpellInfo(42292)]   = 120,  -- PVP trinket spell
-	[GetSpellInfo(59752)]   = 120
+	[5579]    = 120,  -- Immune Root/Snare/Stun 		Warrior, Hunter, Shaman
+	[7744]    = 120,
+	[23274]   = 120,  -- Immune Fear/Polymorph/Snare	Mage
+	[23276]   = 120,  -- Immune Fear/Polymorph/Stun	Paladin, Priest
+	[42292]   = 120,  -- PVP trinket spell
+	[59752]   = 120
 }
 
 DATA.TransName = {}           -- key = unitName | value (string) = transliteration name
