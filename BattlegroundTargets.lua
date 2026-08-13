@@ -60,6 +60,26 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local GetInstanceInfo = GetInstanceInfo -- TODO leming use this? after reload maxPlayer = 0 problem?
 -- -------------------------------------------------------------------------- --
 
+-- 5.5.4 removed the legacy aura and combat log globals. C_UnitAuras/C_CombatLog replace them
+-- and AuraUtil.UnpackAuraData returns the values in the exact order the old globals did.
+if not UnitAura and C_UnitAuras and C_UnitAuras.GetAuraDataByIndex and AuraUtil and AuraUtil.UnpackAuraData then
+	local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+	local UnpackAuraData = AuraUtil.UnpackAuraData
+	UnitAura = function(unit, index, filter)
+		return UnpackAuraData(GetAuraDataByIndex(unit, index, filter))
+	end
+	UnitBuff = function(unit, index, filter)
+		return UnpackAuraData(GetAuraDataByIndex(unit, index, filter or "HELPFUL"))
+	end
+	UnitDebuff = function(unit, index, filter)
+		return UnpackAuraData(GetAuraDataByIndex(unit, index, filter or "HARMFUL"))
+	end
+end
+if not CombatLogGetCurrentEventInfo and C_CombatLog and C_CombatLog.GetCurrentEventInfo then
+	CombatLogGetCurrentEventInfo = C_CombatLog.GetCurrentEventInfo
+end
+-- -------------------------------------------------------------------------- --
+
 local function GetUnitFullName(unit)
 	local name, server = UnitName(unit)
 	if server and server ~= "" then
@@ -1200,6 +1220,12 @@ function BattlegroundTargets:CreateFrames()
 			button:SetPoint("TOPLEFT", GVAR[framename], "BOTTOMLEFT", 0, 0)
 			button:Hide()
 			button:RegisterForClicks("AnyUp")
+			-- 5.5.4 switched SecureActionButton_OnClick to the modern implementation, which only
+			-- runs the action when the click edge matches "ActionButtonUseKeyDown". AddOn buttons
+			-- never get isSecureAction set, so with that cvar enabled (the default) an "AnyUp"
+			-- registration would never fire at all. Pin the button to the mouse-up edge instead of
+			-- following the cvar; older clients ignore the attribute and behave as before.
+			button:SetAttribute("useOnKeyDown", false)
 			button:SetAttribute("type1", "macro")
 			button:SetAttribute("type2", "macro")
 			button:SetAttribute("macrotext1", "")
@@ -8189,7 +8215,7 @@ function BattlegroundTargets:CheckFlagCarrierCHECK(unitID, unitName) -- FLAGSPY
 				flags = flags + 1
 
 				for j = 1, 40 do
-					local _, _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unitID, j)
+					local _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unitID, j)
 					if not spellId then break end
 					if debuffIDs[spellId] then
 						flagDebuff = count
@@ -8221,7 +8247,7 @@ function BattlegroundTargets:CheckFlagCarrierCHECK(unitID, unitName) -- FLAGSPY
 			return
 		end
 		for i = 1, 40 do
-			local _, _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, val2 = UnitDebuff(unitID, i)
+			local _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, _, val2 = UnitDebuff(unitID, i)
 			--print(i, spellId, val2, "#", UnitDebuff(unitID, i))
 			if not spellId then break end
 			if orbIDs[spellId] then
@@ -8279,7 +8305,7 @@ function BattlegroundTargets:CheckFlagCarrierSTART() -- FLAGSPY
 						flags = 1
 
 						for j = 1, 40 do
-							local _, _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unitID, j)
+							local _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(unitID, j)
 							if not spellId then break end
 							if debuffIDs[spellId] then
 								flagDebuff = count
@@ -8316,7 +8342,7 @@ function BattlegroundTargets:CheckFlagCarrierSTART() -- FLAGSPY
 		-- friend debuff check
 		for num = 1, GetNumGroupMembers() do
 			for i = 1, 40 do
-				local _, _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, val2 = UnitDebuff("raid"..num, i)
+				local _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, _, val2 = UnitDebuff("raid"..num, i)
 				if not spellId then break end
 				if orbIDs[spellId] then
 					flags = flags + 1 -- FLAG_TOK_CHK
@@ -8474,7 +8500,7 @@ function BattlegroundTargets:CarrierDebuffCheck(side, button, uID, uName) -- car
 	if isFlagBG > 0 and isFlagBG < 5 then
 		-- flag
 		for i = 1, 40 do
-			local _, _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(uID, i)
+			local _, _, count, _, _, _, _, _, _, spellId = UnitDebuff(uID, i)
 			--print(uID, uName, i, "#", spellId, count, "#", UnitDebuff(uID, i))
 			if debuffIDs[spellId] then
 				flagDebuff = count
@@ -8486,7 +8512,7 @@ function BattlegroundTargets:CarrierDebuffCheck(side, button, uID, uName) -- car
 	elseif isFlagBG == 5 then
 		-- orb
 		for i = 1, 40 do
-			local _, _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, val2 = UnitDebuff(uID, i)
+			local _, _, _, _, _, _, _, _, _, spellId, _, _, _, _, _, val2 = UnitDebuff(uID, i)
 			--print(uID, uName, i, "#", spellId, val2, "#", UnitDebuff(uID, i))
 			if orbIDs[spellId] then
 				local hasflg
