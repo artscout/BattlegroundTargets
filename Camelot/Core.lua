@@ -35,10 +35,12 @@ local SCORE_THROTTLE = 0.8
 local RANGE_INTERVAL = 0.25
 local CARRIER_INTERVAL = 1
 
-local BG_TEAM_SIZE = {
-	[489] = 10, [2996] = 10, [3005] = 10,
-	[529] = 15, [566] = 15,
-	[30] = 40,
+local BG_INFO = {
+	[30] = { size = 40 },
+	[489] = { size = 10, flags = true },
+	[529] = { size = 15 },
+	[2997] = { size = 15 },
+	[3005] = { size = 10 },
 }
 
 local RANGE_SPELLS = {
@@ -612,8 +614,14 @@ function BGT:CheckCarrierUnit(p, unit)
 	end
 end
 
+function BGT:IsFlagBattleground()
+	local info = BG_INFO[select(8, GetInstanceInfo())]
+	return info and info.flags or false
+end
+
 function BGT:OnBGSystemMessage(msg, faction)
 	if type(msg) ~= "string" or issecretvalue(msg) then return end
+	if not self:IsFlagBattleground() then return end
 	local sideName = (faction == self.myFaction) and "Friend" or "Enemy"
 	local side = self.sides[sideName]
 	local name = (FLG.WG_TP_DG_PATTERN_PICKED1 and strmatch(msg, FLG.WG_TP_DG_PATTERN_PICKED1))
@@ -701,8 +709,8 @@ function BGT:DetectTeamSize()
 		if not issecretvalue(n) and n > 0 then size = ceil(n / 2) end
 	end
 	if size == 0 then
-		local mapID = select(8, GetInstanceInfo())
-		size = BG_TEAM_SIZE[mapID] or 0
+		local info = BG_INFO[select(8, GetInstanceInfo())]
+		size = info and info.size or 0
 	end
 	return size
 end
@@ -1032,6 +1040,8 @@ function BGT:Diag()
 	P("inMatch", self.inMatch, "bracket", self.bracket, "faction", self.myFaction, "test", self.testMode)
 	local ok, state = pcall(C_PvP.GetActiveMatchState)
 	P("matchState", ok and state, "scores", GetNumBattlefieldScores and GetNumBattlefieldScores())
+	local name, _, _, _, _, _, _, mapID = GetInstanceInfo()
+	P("instance", name, mapID, "known", BG_INFO[mapID] and BG_INFO[mapID].size, "flags", self:IsFlagBattleground(), "teamSize", self:DetectTeamSize())
 	if C_RestrictedActions and Enum.AddOnRestrictionType then
 		P("restriction pvp", C_RestrictedActions.IsAddOnRestrictionActive(Enum.AddOnRestrictionType.PvPMatch),
 			"combat", C_RestrictedActions.IsAddOnRestrictionActive(Enum.AddOnRestrictionType.Combat))
