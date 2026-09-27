@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: BattlegroundTargets Forever
+## Notes: A Friend-Enemy-Unit-Frame for battlegrounds.
+## Notes-koKR: 전장용 적, 아군 유닛 프레임
+## Author: kunda, fix by Leming, Forever port by Artscout375
+## Version: @project-version@
+## SavedVariables: BattlegroundTargets_Options
+## X-Curse-Project-ID: 982833
+
+Locale\Locale.xml
+utf8.lua
+Camelot\Core.lua
+Camelot\Frames.lua
+Camelot\Options.lua
